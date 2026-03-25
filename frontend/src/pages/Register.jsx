@@ -97,7 +97,41 @@ export default function Register() {
             <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <h2 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '8px' }}>Choose your charity</h2>
               <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '24px' }}>A portion of your subscription goes to them every month.</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+              
+              {charities.length === 0 ? (
+                <p style={{ color: 'var(--text-muted)', padding: '20px', textAlign: 'center' }}>Loading charities...</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+                  {charities.map(c => (
+                    <div key={c.id}
+                      className={`charity-option ${form.charity_id === c.id ? 'selected' : ''}`}
+                      onClick={() => setForm(p => ({ ...p, charity_id: c.id }))}>
+                      <div style={{ fontWeight: '600' }}>{c.name}</div>
+                      <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{c.description?.substring(0, 60)}...</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              <div className="form-group" style={{ marginBottom: '20px' }}>
+                <label className="form-label">Your contribution: {form.charity_percentage}%</label>
+                <input type="range" min="10" max="100" step="5" name="charity_percentage" value={form.charity_percentage} onChange={handle}
+                  style={{ width: '100%', accentColor: 'var(--emerald)' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-dim)' }}>
+                  <span>Min 10%</span><span>100%</span>
+                </div>
+              </div>
+              
+              {!form.charity_id && <p style={{ color: 'var(--gold)', fontSize: '13px', marginBottom: '12px' }}>⚠️ Please select a charity to continue</p>}
+              
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button className="btn btn-outline btn-full" onClick={back}>Back</button>
+                <button className="btn btn-primary btn-full" onClick={next} disabled={!form.charity_id} style={{ opacity: form.charity_id ? 1 : 0.5, cursor: form.charity_id ? 'pointer' : 'not-allowed' }}>
+                  Continue →
+                </button>
+              </div>
+            </motion.div>
+          )}
                 {charities.map(c => (
                   <div key={c.id}
                     className={`charity-option ${form.charity_id === c.id ? 'selected' : ''}`}

@@ -132,29 +132,6 @@ export default function Register() {
               </div>
             </motion.div>
           )}
-                {charities.map(c => (
-                  <div key={c.id}
-                    className={`charity-option ${form.charity_id === c.id ? 'selected' : ''}`}
-                    onClick={() => setForm(p => ({ ...p, charity_id: c.id }))}>
-                    <div style={{ fontWeight: '600' }}>{c.name}</div>
-                    <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{c.description?.substring(0, 60)}...</div>
-                  </div>
-                ))}
-              </div>
-              <div className="form-group" style={{ marginBottom: '20px' }}>
-                <label className="form-label">Your contribution: {form.charity_percentage}%</label>
-                <input type="range" min="10" max="100" step="5" name="charity_percentage" value={form.charity_percentage} onChange={handle}
-                  style={{ width: '100%', accentColor: 'var(--emerald)' }} />
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-dim)' }}>
-                  <span>Min 10%</span><span>100%</span>
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <button className="btn btn-outline btn-full" onClick={back}>Back</button>
-                <button className="btn btn-primary btn-full" onClick={next}>Continue →</button>
-              </div>
-            </motion.div>
-          )}
 
           {/* Step 2: Plan */}
           {step === 2 && (

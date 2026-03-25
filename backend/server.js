@@ -8,12 +8,26 @@ const app = express();
 
 // Configure CORS for frontend (5173) and admin panel (5174)
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL || 'http://localhost:5173',
-    process.env.ADMIN_URL || 'http://localhost:5174',
-    'https://golfgive-h9skddicm-rishab-999s-projects.vercel.app',
-    'https://golf-charity-project.vercel.app'
-  ],
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      process.env.FRONTEND_URL || 'http://localhost:5173',
+      process.env.ADMIN_URL || 'http://localhost:5174',
+      'https://golfgive-6awt98u8o-rishab-999s-projects.vercel.app',
+      'https://golf-charity-project.vercel.app',
+      /https:\/\/golfgive-.*\.vercel\.app$/,  // Allow any Vercel frontend subdomain
+      /https:\/\/.*\.vercel\.app$/  // Allow any Vercel deployment
+    ];
+    
+    if (!origin || allowedOrigins.some(allowed => {
+      if (typeof allowed === 'string') return origin === allowed;
+      if (allowed instanceof RegExp) return allowed.test(origin);
+      return false;
+    })) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed'));
+    }
+  },
   credentials: true
 }));
 

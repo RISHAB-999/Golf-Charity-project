@@ -17,6 +17,7 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [sub, setSub] = useState(null);
+  const [razorpayReady, setRazorpayReady] = useState(false);
 
   // Card form state
   const [card, setCard] = useState({ number: '', expiry: '', cvc: '', name: '' });
@@ -25,10 +26,17 @@ export default function Checkout() {
     // Fetch pending sub to get amount
     api.get('/api/subscriptions').then(r => setSub(r.data)).catch(() => { });
 
-    // Load Razorpay Script
+    // Load Razorpay Script with proper callback
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.async = true;
+    script.onload = () => {
+      console.log("✅ Razorpay script loaded");
+      setRazorpayReady(true);
+    };
+    script.onerror = () => {
+      console.error("❌ Failed to load Razorpay script");
+    };
     document.body.appendChild(script);
 
     return () => {
@@ -43,6 +51,13 @@ export default function Checkout() {
     setLoading(true);
 
     try {
+      // Check if Razorpay is ready
+      if (!razorpayReady || !window.Razorpay) {
+        alert("Payment system is still loading. Please wait a moment and try again.");
+        setLoading(false);
+        return;
+      }
+
       // STEP 1: Create subscription
       await api.post('/api/subscriptions/create', {
         plan: sub?.plan || 'monthly',
@@ -88,6 +103,10 @@ export default function Checkout() {
           color: "#10b981"
         }
       };
+
+      if (!window.Razorpay) {
+        throw new Error("Razorpay SDK not loaded");
+      }
 
       const rzp = new window.Razorpay(options);
 
@@ -298,8 +317,12 @@ export default function Checkout() {
                 <div style={{ background: '#f8f9fa', borderRadius: '12px', padding: '40px 20px', border: '1px solid #e2e8f0', color: '#0f172a' }}>
                   <div style={{ fontSize: '30px', fontWeight: '900', color: '#10b981', marginBottom: '16px', fontFamily: 'Outfit' }}>⚡ Razorpay</div>
                   <p style={{ marginBottom: '24px', color: '#64748b', fontSize: '14px' }}>Pay securely using UPI, Cards, NetBanking, and Wallets through Razorpay.</p>
-                  <button onClick={handlePay} disabled={loading} style={{ background: '#10b981', color: '#fff', border: 'none', borderRadius: '50px', padding: '14px 32px', fontSize: '16px', fontWeight: '700', cursor: 'pointer', width: '100%', maxWidth: '300px', transition: 'all 0.2s', boxShadow: '0 4px 14px rgba(16,185,129,0.3)' }}>
-                    {loading ? 'Connecting...' : 'Pay with Razorpay'}
+                  <button 
+                    onClick={handlePay} 
+                    disabled={loading || !razorpayReady}
+                    title={!razorpayReady ? "Payment system loading..." : ""}
+                    style={{ background: (loading || !razorpayReady) ? '#cbd5e1' : '#10b981', color: '#fff', border: 'none', borderRadius: '50px', padding: '14px 32px', fontSize: '16px', fontWeight: '700', cursor: (loading || !razorpayReady) ? 'not-allowed' : 'pointer', width: '100%', maxWidth: '300px', transition: 'all 0.2s', boxShadow: (loading || !razorpayReady) ? 'none' : '0 4px 14px rgba(16,185,129,0.3)' }}>
+                    {!razorpayReady ? 'Loading...' : loading ? 'Connecting...' : 'Pay with Razorpay'}
                   </button>
                 </div>
               </motion.div>

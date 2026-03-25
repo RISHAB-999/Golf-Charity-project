@@ -68,9 +68,11 @@ export default function Checkout() {
               sub_id: data.sub.id
             });
 
-            if (res.data.status === 'success') {
-              navigate('/dashboard');
-            }
+            console.log("VERIFY SUCCESS:", res.data);
+
+            // ❌ REMOVE navigation from here
+            // let polling handle it
+
           } catch (err) {
             console.error(err);
             alert("Verification failed");
@@ -91,28 +93,38 @@ export default function Checkout() {
 
       // ✅ FALLBACK POLLING (VERY IMPORTANT)
       let attempts = 0;
-      let foundSuccess = false;
 
       const poll = setInterval(async () => {
-        if (foundSuccess) return; // Stop if already found
         attempts++;
 
         try {
           const res = await api.get('/api/subscriptions');
 
-          // ✅ FIXED CONDITION
-          if (res.data?.status === 'active') {
-            foundSuccess = true;
-            clearInterval(poll);
-            navigate('/dashboard');
-          }
-        } catch {}
+          console.log("Polling:", res.data);
 
-        if (attempts > 40) {
-          clearInterval(poll);
+          // ✅ FIX: handle both cases safely
+          if (res.data?.status === 'active') {
+            console.log("✅ Payment confirmed");
+
+            clearInterval(poll);
+
+            // small delay to ensure UI sync
+            setTimeout(() => {
+              navigate('/dashboard');
+            }, 1000);
+          }
+
+        } catch (err) {
+          console.log("Polling error");
         }
 
-      }, 1000); // Poll every 1 second (faster detection)
+        // increase attempts (more time)
+        if (attempts > 40) {  // ←️ increased from 25
+          clearInterval(poll);
+          console.warn("Polling timeout");
+        }
+
+      }, 2500); // ←️ slower polling (more reliable)
 
       rzp.on('payment.closed', function () {
         // Don't clear polling - let it continue to detect success

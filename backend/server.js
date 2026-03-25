@@ -51,7 +51,7 @@ setInterval(async () => {
   }
 }, 86400000); // 24 hours in milliseconds
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT ;
 app.listen(PORT, () => {
   console.log(`\x1b[32m✔ Golf Charity API running on http://localhost:${PORT}\x1b[0m`);
 });

@@ -75,7 +75,7 @@ export default function Winners() {
                 <td><span className={`badge ${statusBadge(w.status)}`}>{w.status}</span></td>
                 <td>
                   {w.proof_url
-                    ? <a href={`http://localhost:5000${w.proof_url}`} target="_blank" rel="noreferrer" style={{ color: 'var(--emerald)', fontSize: '13px', textDecoration: 'none' }}>View Proof</a>
+                    ? <a href={`${import.meta.env.VITE_API_URL}/${w.proof_url}`} target="_blank" rel="noreferrer" style={{ color: 'var(--emerald)', fontSize: '13px', textDecoration: 'none' }}>View Proof</a>
                     : <span style={{ color: 'var(--text-dim)', fontSize: '13px' }}>None</span>
                   }
                 </td>

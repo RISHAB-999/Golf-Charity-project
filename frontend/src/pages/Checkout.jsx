@@ -99,10 +99,19 @@ export default function Checkout() {
         }
       };
 
+      console.log("📦 Creating Razorpay instance...");
       const rzp = new window.Razorpay(options);
+      
       rzp.on('payment.failed', function (response) {
+        console.error("❌ RAZORPAY PAYMENT FAILED:", response);
         alert('Payment Failed: ' + response.error.description);
       });
+      
+      rzp.on('payment.success', function (response) {
+        console.log("✅ RAZORPAY SUCCESS EVENT:", response);
+      });
+      
+      console.log("🚀 Opening Razorpay modal...");
       rzp.open();
     } catch (err) {
       console.error(err);

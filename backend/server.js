@@ -10,7 +10,9 @@ const app = express();
 app.use(cors({
   origin: [
     process.env.FRONTEND_URL || 'http://localhost:5173',
-    process.env.ADMIN_URL || 'http://localhost:5174'
+    process.env.ADMIN_URL || 'http://localhost:5174',
+    'https://golfgive-h9skddicm-rishab-999s-projects.vercel.app',
+    'https://golf-charity-project.vercel.app'
   ],
   credentials: true
 }));

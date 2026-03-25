@@ -102,8 +102,37 @@ export default function Checkout() {
       console.log("📦 Creating Razorpay instance...");
       const rzp = new window.Razorpay(options);
       
+      // Fallback polling in case handler doesn't fire
+      let pollCount = 0;
+      const pollInterval = setInterval(() => {
+        pollCount++;
+        console.log(`🔄 Polling for payment status... (attempt ${pollCount})`);
+        
+        api.get('/api/subscriptions')
+          .then(r => {
+            if (r.data?.status === 'active') {
+              console.log("✅ FALLBACK: Payment confirmed via polling!");
+              clearInterval(pollInterval);
+              setSuccess(true);
+              setTimeout(() => navigate('/dashboard'), 2000);
+            }
+          })
+          .catch(() => {});
+        
+        if (pollCount >= 30) {
+          clearInterval(pollInterval);
+          console.warn("⏱️ Polling timeout - check payment status manually");
+        }
+      }, 2000); // Poll every 2 seconds
+      
+      rzp.on('payment.closed', function () {
+        console.log("🔴 Razorpay modal closed by user");
+        clearInterval(pollInterval);
+      });
+      
       rzp.on('payment.failed', function (response) {
         console.error("❌ RAZORPAY PAYMENT FAILED:", response);
+        clearInterval(pollInterval);
         alert('Payment Failed: ' + response.error.description);
       });
       

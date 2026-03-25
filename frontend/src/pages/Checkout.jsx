@@ -108,10 +108,13 @@ export default function Checkout() {
 
             clearInterval(poll);
 
-            // small delay to ensure UI sync
+            // Show success popup first
+            setSuccess(true);
+
+            // Delay redirect to let user see the success message
             setTimeout(() => {
               navigate('/dashboard');
-            }, 1000);
+            }, 3000); // Show success popup for 3 seconds
           }
 
         } catch (err) {

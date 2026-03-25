@@ -62,7 +62,7 @@ router.post('/create', auth, async (req, res) => {
       .insert({
         user_id: req.user.id,
         plan,
-        status: 'pending', // ✅ FIXED HERE
+        status: 'inactive', // ✅ FIXED HERE - waiting for payment verification
         amount,
         ends_at: ends_at.toISOString(),
       })
@@ -88,14 +88,14 @@ router.post('/checkout', auth, async (req, res) => {
       .from('subscriptions')
       .select('*')
       .eq('user_id', req.user.id)
-      .eq('status', 'pending')
+      .eq('status', 'inactive')
       .order('created_at', { ascending: false })
       .limit(1)
       .single();
 
     if (error || !sub) {
       return res.status(404).json({
-        error: 'No pending subscription found',
+        error: 'No inactive subscription waiting for payment',
       });
     }
 

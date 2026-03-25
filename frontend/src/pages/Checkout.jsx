@@ -60,7 +60,11 @@ export default function Checkout() {
         order_id: data.order_id,
 
         handler: async function (response) {
+          console.log("💚 PAYMENT SUCCESS HANDLER CALLED");
+          console.log("Response:", response);
+          
           try {
+            console.log("🔄 Verifying payment...");
             const res = await api.post('/api/subscriptions/verify', {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_order_id: response.razorpay_order_id,
@@ -68,17 +72,22 @@ export default function Checkout() {
               sub_id: data.sub.id
             });
 
-            console.log("VERIFY RESPONSE:", res.data);
+            console.log("✅ VERIFY RESPONSE:", res.data);
 
             if (res.data.status === 'success') {
+              console.log("✨ Setting success state...");
               setSuccess(true);
-              setTimeout(() => navigate('/dashboard'), 2000);
+              setTimeout(() => {
+                console.log("🎯 Navigating to dashboard...");
+                navigate('/dashboard');
+              }, 2000);
             } else {
-              alert('Payment verification failed.');
+              console.error("❌ Unexpected response status:", res.data.status);
+              alert('Payment verification failed. Status: ' + res.data.status);
             }
           } catch (err) {
-            console.error(err);
-            alert(err.response?.data?.error || 'Payment verification failed.');
+            console.error("❌ VERIFICATION ERROR:", err);
+            alert(err.response?.data?.error || 'Payment verification failed: ' + err.message);
           }
         },
         prefill: {

@@ -161,8 +161,33 @@ export default function Checkout() {
           </motion.div>
           <h2 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '8px' }}>Payment Successful!</h2>
           <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Your subscription is now active.</p>
-          <div className="spinner" style={{ margin: '0 auto', width: '24px', height: '24px' }} />
-          <p style={{ color: 'var(--text-dim)', fontSize: '13px', marginTop: '16px' }}>Redirecting to dashboard...</p>
+          
+          <button 
+            onClick={() => {
+              console.log("🎯 Manual redirect to dashboard");
+              navigate('/dashboard');
+            }}
+            style={{
+              width: '100%',
+              padding: '12px 24px',
+              background: 'var(--emerald)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '16px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              marginTop: '20px',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => e.target.style.transform = 'scale(1.02)'}
+            onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+          >
+            Continue to Dashboard
+          </button>
+          
+          <p style={{ color: 'var(--text-dim)', fontSize: '12px', marginTop: '16px' }}>Or redirecting automatically...</p>
+          <div className="spinner" style={{ margin: '12px auto 0', width: '20px', height: '20px' }} />
         </motion.div>
       </div>
     );

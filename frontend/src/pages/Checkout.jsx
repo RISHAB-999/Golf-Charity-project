@@ -91,8 +91,10 @@ export default function Checkout() {
 
       // ✅ FALLBACK POLLING (VERY IMPORTANT)
       let attempts = 0;
+      let foundSuccess = false;
 
       const poll = setInterval(async () => {
+        if (foundSuccess) return; // Stop if already found
         attempts++;
 
         try {
@@ -100,19 +102,20 @@ export default function Checkout() {
 
           // ✅ FIXED CONDITION
           if (res.data?.status === 'active') {
+            foundSuccess = true;
             clearInterval(poll);
             navigate('/dashboard');
           }
         } catch {}
 
-        if (attempts > 25) {
+        if (attempts > 40) {
           clearInterval(poll);
         }
 
-      }, 2000);
+      }, 1000); // Poll every 1 second (faster detection)
 
       rzp.on('payment.closed', function () {
-        clearInterval(poll);
+        // Don't clear polling - let it continue to detect success
       });
 
       rzp.on('payment.failed', function (response) {

@@ -43,12 +43,12 @@ export default function Checkout() {
     setLoading(true);
 
     try {
-      // ✅ STEP 1: CREATE SUBSCRIPTION FIRST
+      // STEP 1: Create subscription
       await api.post('/api/subscriptions/create', {
         plan: sub?.plan || 'monthly',
       });
 
-      // ✅ STEP 2: THEN CALL CHECKOUT
+      // STEP 2: Create Razorpay order
       const { data } = await api.post('/api/subscriptions/checkout');
 
       const options = {
@@ -60,11 +60,7 @@ export default function Checkout() {
         order_id: data.order_id,
 
         handler: async function (response) {
-          console.log("💚 PAYMENT SUCCESS HANDLER CALLED");
-          console.log("Response:", response);
-          
           try {
-            console.log("🔄 Verifying payment...");
             const res = await api.post('/api/subscriptions/verify', {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_order_id: response.razorpay_order_id,
@@ -72,79 +68,63 @@ export default function Checkout() {
               sub_id: data.sub.id
             });
 
-            console.log("✅ VERIFY RESPONSE:", res.data);
-
             if (res.data.status === 'success') {
-              console.log("✨ Setting success state...");
-              setSuccess(true);
-              setTimeout(() => {
-                console.log("🎯 Navigating to dashboard...");
-                navigate('/dashboard');
-              }, 2000);
-            } else {
-              console.error("❌ Unexpected response status:", res.data.status);
-              alert('Payment verification failed. Status: ' + res.data.status);
+              navigate('/dashboard');
             }
           } catch (err) {
-            console.error("❌ VERIFICATION ERROR:", err);
-            alert(err.response?.data?.error || 'Payment verification failed: ' + err.message);
+            console.error(err);
+            alert("Verification failed");
           }
         },
+
         prefill: {
           name: user?.name,
           email: user?.email,
         },
+
         theme: {
           color: "#10b981"
         }
       };
 
-      console.log("📦 Creating Razorpay instance...");
       const rzp = new window.Razorpay(options);
-      
-      // Fallback polling in case handler doesn't fire
-      let pollCount = 0;
-      const pollInterval = setInterval(() => {
-        pollCount++;
-        console.log(`🔄 Polling for payment status... (attempt ${pollCount})`);
-        
-        api.get('/api/subscriptions')
-          .then(r => {
-            if (r.data?.status === 'active') {
-              console.log("✅ FALLBACK: Payment confirmed via polling!");
-              clearInterval(pollInterval);
-              setSuccess(true);
-              setTimeout(() => navigate('/dashboard'), 2000);
-            }
-          })
-          .catch(() => {});
-        
-        if (pollCount >= 30) {
-          clearInterval(pollInterval);
-          console.warn("⏱️ Polling timeout - check payment status manually");
+
+      // ✅ FALLBACK POLLING (VERY IMPORTANT)
+      let attempts = 0;
+
+      const poll = setInterval(async () => {
+        attempts++;
+
+        try {
+          const res = await api.get('/api/subscriptions');
+
+          // ✅ FIXED CONDITION
+          if (res.data?.status === 'active') {
+            clearInterval(poll);
+            navigate('/dashboard');
+          }
+        } catch {}
+
+        if (attempts > 25) {
+          clearInterval(poll);
         }
-      }, 2000); // Poll every 2 seconds
-      
+
+      }, 2000);
+
       rzp.on('payment.closed', function () {
-        console.log("🔴 Razorpay modal closed by user");
-        clearInterval(pollInterval);
+        clearInterval(poll);
       });
-      
+
       rzp.on('payment.failed', function (response) {
-        console.error("❌ RAZORPAY PAYMENT FAILED:", response);
-        clearInterval(pollInterval);
-        alert('Payment Failed: ' + response.error.description);
+        clearInterval(poll);
+        alert("Payment failed: " + response.error.description);
       });
-      
-      rzp.on('payment.success', function (response) {
-        console.log("✅ RAZORPAY SUCCESS EVENT:", response);
-      });
-      
-      console.log("🚀 Opening Razorpay modal...");
+
       rzp.open();
+
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.error || 'Failed to initialize payment.');
+      alert(err.response?.data?.error || 'Payment init failed');
     } finally {
       setLoading(false);
     }

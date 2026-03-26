@@ -133,10 +133,15 @@ Multer (File uploads)
 
 ### Deployment
 ```
-Frontend: Vercel (ready for deployment)
-Backend: Node.js hosting (Heroku/Railway)
+Frontend: Vercel
+Backend: Render
 Database: Supabase Cloud
 ```
+
+### 🌐 Live URLs
+- **Frontend:** https://golfgive-cusipgg0n-rishab-999s-projects.vercel.app/
+- **Admin Dashboard:** https://golf-charity-project.vercel.app/
+- **Backend API:** https://golf-charity-project-6n04.onrender.com/
 
 ---
 
@@ -444,14 +449,14 @@ Repository: /golf-charity/
 
 ## 🚢 Deployment Checklist
 
-- [ ] Environment variables configured
-- [ ] Database backups enabled
-- [ ] Frontend deployed to Vercel
-- [ ] Backend deployed to hosting
-- [ ] Email credentials secured
-- [ ] Razorpay production keys applied
-- [ ] HTTPS enabled
-- [ ] CORS configured for production
+- [x] Environment variables configured
+- [x] Database backups enabled
+- [x] Frontend deployed to Vercel
+- [x] Backend deployed to Render
+- [x] Email credentials secured
+- [x] Razorpay production keys applied
+- [x] HTTPS enabled
+- [x] CORS configured for production
 
 ---
 

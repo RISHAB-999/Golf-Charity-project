@@ -1,12 +1,19 @@
 const nodemailer = require('nodemailer');
 const { Resend } = require('resend');
+const SibApiV3Sdk = require('sib-api-v3-sdk');
 
 // Multi-provider email service for notifications: winner announcements, verifications, subscriptions, alerts
 class EmailService {
   constructor() {
-    // Initialize email provider (resend, sendgrid, or nodemailer)
-    if (process.env.EMAIL_SERVICE === 'resend') {
-      // Resend.com (recommended for production)
+    // Initialize email provider (brevo, resend, sendgrid, or nodemailer)
+    if (process.env.EMAIL_SERVICE === 'brevo') {
+      // Brevo (formerly Sendinblue) - recommended for free tier (300 emails/day)
+      this.provider = 'brevo';
+      const defaultClient = SibApiV3Sdk.ApiClient.instance;
+      defaultClient.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
+      this.emailApi = new SibApiV3Sdk.TransactionalEmailsApi();
+    } else if (process.env.EMAIL_SERVICE === 'resend') {
+      // Resend.com (optional)
       this.provider = 'resend';
       this.resend = new Resend(process.env.RESEND_API_KEY);
     } else if (process.env.EMAIL_SERVICE === 'sendgrid') {
@@ -32,9 +39,17 @@ class EmailService {
   }
 
   async send(to, subject, htmlContent) {
-    // Send email via configured provider (resend, sendgrid, or nodemailer)
+    // Send email via configured provider (brevo, resend, sendgrid, or nodemailer)
     try {
-      if (this.provider === 'resend') {
+      if (this.provider === 'brevo') {
+        const sendSmtpEmail = {
+          to: [{ email: to }],
+          sender: { name: this.brandName, email: this.fromEmail },
+          subject,
+          htmlContent,
+        };
+        await this.emailApi.sendTransacEmail(sendSmtpEmail);
+      } else if (this.provider === 'resend') {
         const response = await this.resend.emails.send({
           from: `${this.brandName} <${this.fromEmail}>`,
           to,

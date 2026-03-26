@@ -38,7 +38,7 @@ export default function Analytics() {
       <p style={{ color: 'var(--text-muted)', marginBottom: '28px' }}>Platform health at a glance.</p>
 
       {/* Stat cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '16px', marginBottom: '32px' }}>
         {statCards.map((s, i) => (
           <div key={i} className="glass" style={{ padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -53,7 +53,7 @@ export default function Analytics() {
       </div>
 
       {/* Charts */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
         <div className="glass" style={{ padding: '24px' }}>
           <h3 style={{ marginBottom: '20px', fontSize: '16px' }}>📊 Financial Distribution</h3>
           <ResponsiveContainer width="100%" height={220}>

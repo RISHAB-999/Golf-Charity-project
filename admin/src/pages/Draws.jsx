@@ -51,14 +51,14 @@ export default function Draws() {
       <div className="glass" style={{ padding: '24px', marginBottom: '24px' }}>
         <h3 style={{ fontWeight: '700', marginBottom: '16px' }}>🎲 Run Draw Simulation</h3>
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-          <div style={{ flex: 1, minWidth: '180px' }}>
+          <div style={{ flex: 1, minWidth: '140px' }}>
             <label style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>Draw Type</label>
             <select className="form-input" value={config.draw_type} onChange={e => setConfig(p => ({ ...p, draw_type: e.target.value }))}>
               <option value="random">Random (Lottery)</option>
               <option value="algorithm">Algorithm (Score-Weighted)</option>
             </select>
           </div>
-          <div style={{ flex: 1, minWidth: '180px' }}>
+          <div style={{ flex: 1, minWidth: '140px' }}>
             <label style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>Month / Year</label>
             <input className="form-input" value={config.month_year} onChange={e => setConfig(p => ({ ...p, month_year: e.target.value }))} />
           </div>

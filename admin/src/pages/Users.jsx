@@ -48,7 +48,7 @@ export default function Users() {
 
       {/* Edit modal */}
       {editing && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: '24px' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: '16px' }}>
           <div className="glass" style={{ width: '100%', maxWidth: '440px', padding: '28px' }}>
             <h3 style={{ fontWeight: '700', marginBottom: '20px' }}>Edit User</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>

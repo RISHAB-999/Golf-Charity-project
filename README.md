@@ -80,10 +80,11 @@
 - Secure checkout flow
 
 ✅ **Email Service**
-- Multi-provider support (Gmail, SendGrid, Resend)
-- Winner announcements
-- Verification confirmations
-- Graceful fallback degradation
+- Brevo (Sendinblue) integration for reliable email delivery
+- Sender verification and authentication
+- Winner announcements with prize details
+- Registration & subscription confirmations
+- 300+ emails per day free tier
 
 ✅ **Admin Features**
 - Analytics dashboard
@@ -126,7 +127,7 @@ Node.js + Express 5.2.1
 Supabase PostgreSQL
 JWT Authentication
 bcryptjs
-Nodemailer (Email)
+Brevo API (Email - sib-api-v3-sdk)
 Razorpay (Payments)
 Multer (File uploads)
 ```
@@ -453,10 +454,11 @@ Repository: /golf-charity/
 - [x] Database backups enabled
 - [x] Frontend deployed to Vercel
 - [x] Backend deployed to Render
-- [x] Email credentials secured
-- [x] Razorpay production keys applied
-- [x] HTTPS enabled
-- [x] CORS configured for production
+- [x] Email service (Brevo) configured and verified
+- [x] Razorpay payment gateway integrated
+- [x] HTTPS enabled on all services
+- [x] CORS configured for dynamic Vercel URLs
+- [x] Email sender verification completed
 
 ---
 

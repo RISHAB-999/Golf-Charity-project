@@ -10,13 +10,17 @@ const navItems = [
   { to: '/winners', icon: '🏆', label: 'Winners' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   const { admin, logout } = useAdminAuth();
   const navigate = useNavigate();
   const handleLogout = () => { logout(); navigate('/'); };
+  
+  const handleNavClick = () => {
+    onClose?.();
+  };
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-logo">
         <img src={logoIcon} alt="GolfGive" style={{ width: '30px', height: '30px', objectFit: 'contain' }} />
         <div>
@@ -27,7 +31,7 @@ export default function Sidebar() {
 
       <nav className="sidebar-nav">
         {navItems.map(item => (
-          <NavLink key={item.to} to={item.to} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
+          <NavLink key={item.to} to={item.to} onClick={handleNavClick} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
             <span>{item.icon}</span>
             <span>{item.label}</span>
           </NavLink>
@@ -48,6 +52,18 @@ export default function Sidebar() {
           width: var(--sidebar-w); height: 100vh; position: fixed; top: 0; left: 0;
           background: var(--bg2); border-right: 1px solid var(--border);
           display: flex; flex-direction: column; z-index: 50; padding: 0;
+          transition: transform 0.3s ease;
+        }
+        @media (max-width: 768px) {
+          .sidebar {
+            width: 260px;
+            transform: translateX(-100%);
+            height: 100vh;
+            box-shadow: 2px 0 16px rgba(0, 0, 0, 0.5);
+          }
+          .sidebar.mobile-open {
+            transform: translateX(0);
+          }
         }
         .sidebar-logo { display: flex; align-items: center; gap: 12px; padding: 20px 20px 16px; border-bottom: 1px solid var(--border); }
         .sidebar-nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }

@@ -1,13 +1,14 @@
 const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
 // Multi-provider email service for notifications: winner announcements, verifications, subscriptions, alerts
 class EmailService {
   constructor() {
-    // Initialize email provider (nodemailer, sendgrid, or resend)
+    // Initialize email provider (resend, sendgrid, or nodemailer)
     if (process.env.EMAIL_SERVICE === 'resend') {
       // Resend.com (recommended for production)
       this.provider = 'resend';
-      this.resend = require('resend').Resend;
+      this.resend = new Resend(process.env.RESEND_API_KEY);
     } else if (process.env.EMAIL_SERVICE === 'sendgrid') {
       // SendGrid (alternative)
       this.provider = 'sendgrid';
@@ -34,12 +35,15 @@ class EmailService {
     // Send email via configured provider (resend, sendgrid, or nodemailer)
     try {
       if (this.provider === 'resend') {
-        await this.resend.emails.send({
+        const response = await this.resend.emails.send({
           from: `${this.brandName} <${this.fromEmail}>`,
           to,
           subject,
           html: htmlContent,
         });
+        if (response.error) {
+          throw new Error(response.error.message);
+        }
       } else if (this.provider === 'sendgrid') {
         await this.sgMail.send({
           from: this.fromEmail,
